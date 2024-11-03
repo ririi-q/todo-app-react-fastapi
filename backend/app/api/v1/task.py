@@ -29,3 +29,15 @@ def create_task_for_user(
     user_id: int, task: schemas.TaskCreate, db: Session = Depends(get_db)
 ):
     return crud.create_user_task(db=db, task=task, user_id=user_id)
+
+
+@router.put("/users/{user_id}/tasks/{task_id}", response_model=schemas.Task)
+def update_task_for_user(
+    user_id: int, task_id: int, task: schemas.TaskUpdate, db: Session = Depends(get_db)
+):
+    return crud.update_user_task(db=db, task=task, user_id=user_id, task_id=task_id)
+
+
+@router.delete("/users/{user_id}/tasks/{task_id}")
+def delete_task_for_user(user_id: int, task_id: int, db: Session = Depends(get_db)):
+    return crud.delete_user_task(db=db, user_id=user_id, task_id=task_id)
