@@ -184,9 +184,19 @@ resource "aws_ecs_task_definition" "backend" {
           protocol = "tcp"
         }
       ]
+
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = "/ecs/${var.project}-${var.env}-backend"
+          "awslogs-region"        = "ap-northeast-1"
+          "awslogs-stream-prefix" = "backend"
+        }
+      }
     }
   ])
 }
+
 
 # ECS Service
 resource "aws_ecs_service" "backend" {
@@ -195,6 +205,7 @@ resource "aws_ecs_service" "backend" {
   task_definition = aws_ecs_task_definition.backend.arn
   desired_count   = 2
   launch_type     = "FARGATE"
+  
 
   network_configuration {
     subnets          = var.private_subnet_ids
