@@ -19,7 +19,7 @@ resource "aws_amplify_app" "frontend" {
             }
             build = {
               commands = [
-                "npm run build"
+                "npm install && npm run build"
               ]
             }
           }
@@ -39,11 +39,7 @@ resource "aws_amplify_app" "frontend" {
     ]
   })
 
-  # 環境変数
-  environment_variables = {
-    NODE_ENV     = var.env
-    VITE_API_URL = "https://${var.api_domain}"
-  }
+
 
   platform = "WEB"
   enable_branch_auto_build = true
@@ -55,6 +51,13 @@ resource "aws_amplify_branch" "main" {
   app_id      = aws_amplify_app.frontend.id
   branch_name = "main"
   stage       = "PRODUCTION"
+
+  # 環境変数
+  environment_variables = {
+    NODE_ENV     = "prod"
+    ENVIRONMENT  = "prod"
+    VITE_API_URL = "https://${var.api_domain}"
+  }
 }
 
 resource "aws_amplify_branch" "develop" {
@@ -62,7 +65,10 @@ resource "aws_amplify_branch" "develop" {
   branch_name = "develop"
   stage       = "DEVELOPMENT"
 
+  # 環境変数
   environment_variables = {
-    NODE_ENV = "development"
+    NODE_ENV     = "dev"
+    ENVIRONMENT  = "dev"
+    VITE_API_URL = "http://${var.api_domain}"
   }
 } 
