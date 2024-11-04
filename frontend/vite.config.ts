@@ -1,21 +1,26 @@
-import path from "path"
-import { defineConfig } from 'vite'
+import path from 'path'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 
-// https://vite.dev/config/
-export default defineConfig({
-  plugins: [react()],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
+export default defineConfig(() => {
+  const environment = process.env.ENVIRONMENT || 'local'
+  const env = loadEnv(environment, process.cwd(), '')
+  return {
+    plugins: [react()],
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, './src'),
+      },
     },
-  },
-  server: {
-    port: 5173,
-    host: '0.0.0.0'
-  },
-  optimizeDeps: {
-    include: ['@radix-ui/react-checkbox']
+    server: {
+      port: 5173,
+      host: '0.0.0.0',
+    },
+    optimizeDeps: {
+      include: ['@radix-ui/react-checkbox'],
+    },
+    define: {
+      'process.env': env,
+    },
   }
 })
-
