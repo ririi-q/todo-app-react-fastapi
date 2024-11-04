@@ -14,3 +14,9 @@ wheels/
 
 # uv
 uv.lock
+
+# env
+.env.local
+.env.dev
+
+.DS_Store
