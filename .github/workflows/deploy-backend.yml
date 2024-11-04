@@ -74,7 +74,7 @@ jobs:
             echo "ENVIRONMENT=dev" >> $GITHUB_ENV
           fi
 
-          echo "PROJECT_NAME=task-app-1" >> $GITHUB_ENV
+          echo "PROJECT_NAME=todo-app-1" >> $GITHUB_ENV
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
