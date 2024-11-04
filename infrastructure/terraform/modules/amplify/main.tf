@@ -4,6 +4,13 @@ resource "aws_amplify_app" "frontend" {
   repository   = var.repository_url
   access_token = var.github_access_token
 
+  # Rewrite設定を追加
+  custom_rule {
+    source = "</^[^.]+$|\\.(?!(css|gif|ico|jpg|js|png|txt|svg|woff|ttf|map|json)$)([^.]+$)/>"
+    target = "/index.html"
+    status = "200"
+  }
+  
   # モノレポ設定
   build_spec = jsonencode({
     version = 1
