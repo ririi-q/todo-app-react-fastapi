@@ -176,6 +176,14 @@ resource "aws_ecs_task_definition" "backend" {
         retries     = 3
         startPeriod = 60
       }
+
+      portMappings = [
+        {
+          containerPort = 8000
+          hostPort = 8000
+          protocol = "tcp"
+        }
+      ]
     }
   ])
 }
