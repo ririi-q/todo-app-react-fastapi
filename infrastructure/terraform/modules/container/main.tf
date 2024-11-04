@@ -108,11 +108,15 @@ resource "aws_lb_target_group" "backend" {
   target_type = "ip"
 
   health_check {
+    enabled             = true
     healthy_threshold   = 2
-    unhealthy_threshold = 2
-    timeout             = 3
-    path                = "/health"
+    unhealthy_threshold = 3
     interval            = 30
+    matcher            = "200-399"
+    path               = "/health"
+    port               = "traffic-port"
+    protocol           = "HTTP"
+    timeout            = 5
   }
 }
 
@@ -122,11 +126,34 @@ resource "aws_lb_listener" "http" {
   protocol          = "HTTP"
 
   default_action {
+    type = "redirect"
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
+  # default_action {
+  #   type             = "forward"
+  #   target_group_arn = aws_lb_target_group.backend.arn
+  # }
+}
+
+resource "aws_lb_listener" "https" {
+  load_balancer_arn = aws_lb.main.arn
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = var.certificate_arn
+
+  # 証明書が完全に有効になるまで待機
+  depends_on = [var.certificate_arn]
+  default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.backend.arn
   }
+  
 }
-
 # ECS Task Definition
 resource "aws_ecs_task_definition" "backend" {
   family                   = "${var.project}-${var.env}-backend"
@@ -169,13 +196,13 @@ resource "aws_ecs_task_definition" "backend" {
         ]
       )
 
-      healthCheck = {
-        command     = ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
-        interval    = 30
-        timeout     = 5
-        retries     = 3
-        startPeriod = 60
-      }
+      # healthCheck = {
+      #   command     = ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      #   interval    = 30
+      #   timeout     = 5
+      #   retries     = 3
+      #   startPeriod = 60
+      # }
 
       portMappings = [
         {
@@ -203,7 +230,7 @@ resource "aws_ecs_service" "backend" {
   name            = "${var.project}-${var.env}-backend"
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.backend.arn
-  desired_count   = 2
+  desired_count   = 1
   launch_type     = "FARGATE"
   
 

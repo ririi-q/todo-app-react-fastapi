@@ -10,7 +10,7 @@ resource "aws_amplify_app" "frontend" {
     target = "/index.html"
     status = "200"
   }
-  
+
   # モノレポ設定
   build_spec = jsonencode({
     version = 1
@@ -76,6 +76,6 @@ resource "aws_amplify_branch" "develop" {
   environment_variables = {
     NODE_ENV     = "dev"
     ENVIRONMENT  = "dev"
-    VITE_API_URL = "http://${var.api_domain}"
+    VITE_API_URL = "https://${var.api_domain}"
   }
 } 

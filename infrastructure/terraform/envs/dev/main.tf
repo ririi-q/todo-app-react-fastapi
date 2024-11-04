@@ -54,6 +54,7 @@ module "container" {
   db_security_group_id = module.database.db_security_group_id
   public_subnet_ids = module.network.public_subnet_ids
   vpc_id = module.network.vpc_id
+  certificate_arn    = module.route53.certificate_arn
 }
 
 module "amplify" {
@@ -63,5 +64,16 @@ module "amplify" {
   env               = var.environment
   repository_url    = var.repository_url
   github_access_token = var.github_access_token
-  api_domain        = module.container.api_domain
+  api_domain        = module.route53.domain_name
 }
+
+
+module "route53" {
+  source = "../../modules/route53"
+
+  project      = var.project_name
+  env         = var.environment
+  alb_dns_name = module.container.alb_dns_name
+  alb_zone_id  = module.container.alb_zone_id
+}
+

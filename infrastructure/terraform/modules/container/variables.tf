@@ -47,3 +47,8 @@ variable "db_password" {
   description = "Database password"
   type        = string
 }
+
+variable "certificate_arn" {
+  description = "Certificate ARN"
+  type        = string
+}
