@@ -110,9 +110,9 @@ resource "aws_lb_target_group" "backend" {
   health_check {
     enabled             = true
     healthy_threshold   = 2
-    unhealthy_threshold = 3
-    interval            = 30
-    matcher            = "200-399"
+    unhealthy_threshold = 2
+    interval            = 15
+    matcher            = "200"
     path               = "/health"
     port               = "traffic-port"
     protocol           = "HTTP"
