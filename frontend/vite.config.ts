@@ -15,6 +15,7 @@ export default defineConfig(() => {
     server: {
       port: 5173,
       host: '0.0.0.0',
+      historyApiFallback: true,
     },
     optimizeDeps: {
       include: ['@radix-ui/react-checkbox'],
