@@ -26,6 +26,7 @@ WORKDIR /app
 RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
     curl \
+    dos2unix \
     && rm -rf /var/lib/apt/lists/*
 
 # 仮想環境のコピー
@@ -37,10 +38,13 @@ COPY ./app ./app
 COPY ./db ./db
 COPY ./docker-entrypoint.sh ./
 
+# エントリーポイントの改行コード修正と実行権限付与
+RUN dos2unix /app/docker-entrypoint.sh && \
+    chmod +x /app/docker-entrypoint.sh
+
 # 非rootユーザーの作成
 RUN useradd -r -s /bin/false appuser && \
-    chown -R appuser:appuser /app && \
-    chmod +x /app/docker-entrypoint.sh
+    chown -R appuser:appuser /app
 
 USER appuser
 
@@ -50,5 +54,5 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
 
 EXPOSE 8000
 
-ENTRYPOINT [ "/app/docker-entrypoint.sh" ]
+ENTRYPOINT ["/bin/sh", "/app/docker-entrypoint.sh"]
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]

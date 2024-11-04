@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
 # 環境変数のデフォルト値設定
@@ -13,7 +13,7 @@ if [ "$MIGRATE" = "true" ]; then
 fi
 
 # 開発環境、ローカル環境の場合のみシードデータを投入
-if [ "$SEED" = "true" ] && ([ "$ENVIRONMENT" = "development" ] || [ "$ENVIRONMENT" = "local" ]) ; then
+if [ "$SEED" = "true" ] && ([ "$ENVIRONMENT" = "development" ] || [ "$ENVIRONMENT" = "local" ]); then
     echo "Running database seeds... now no seed"
 fi
 
