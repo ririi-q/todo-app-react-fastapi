@@ -101,26 +101,6 @@ jobs:
           docker push $ECR_REGISTRY/${PROJECT_NAME}-${ENVIRONMENT}-backend:${IMAGE_TAG}
           docker push $ECR_REGISTRY/${PROJECT_NAME}-${ENVIRONMENT}-backend:latest
 
-      - name: Wait for migration to complete
-        run: |
-          aws ecs wait tasks-stopped \
-            --cluster ${PROJECT_NAME}-${ENVIRONMENT}-cluster \
-            --tasks $(aws ecs run-task \
-              --cluster ${PROJECT_NAME}-${ENVIRONMENT}-cluster \
-              --task-definition ${PROJECT_NAME}-${ENVIRONMENT}-migration \
-              --network-configuration "awsvpcConfiguration={subnets=[${SUBNET_IDS}],securityGroups=[${SECURITY_GROUP_IDS}]}" \
-              --launch-type FARGATE \
-              --query 'tasks[0].taskArn' \
-              --output text)
-
-      - name: Run migrations
-        run: |
-          aws ecs run-task \
-            --cluster ${PROJECT_NAME}-${ENVIRONMENT}-cluster \
-            --task-definition ${PROJECT_NAME}-${ENVIRONMENT}-migration \
-            --network-configuration "awsvpcConfiguration={subnets=[${SUBNET_IDS}],securityGroups=[${SECURITY_GROUP_IDS}]}" \
-            --launch-type FARGATE
-
       - name: Update ECS service
         run: |
           aws ecs update-service \
