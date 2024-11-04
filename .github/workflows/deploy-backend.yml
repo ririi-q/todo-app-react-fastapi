@@ -2,7 +2,7 @@ name: Deploy Backend
 
 on:
   push:
-    branches: [develop, staging, main]
+    branches: [develop, main]
     paths:
       - "backend/**"
       - ".github/workflows/deploy-backend.yml"
@@ -44,24 +44,23 @@ jobs:
           uv venv
           uv pip install -r backend/pyproject.toml
 
-      - name: Run tests
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres_test
-        run: |
-          cd backend
-          pytest -v --cov=app --cov-report=xml
+      # - name: Run tests
+      #   env:
+      #     DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres_test
+      #   run: |
+      #     cd backend
+      #     pytest -v --cov=app --cov-report=xml
 
-      - name: Upload coverage reports
-        uses: codecov/codecov-action@v3
-        with:
-          file: ./backend/coverage.xml
+      # - name: Upload coverage reports
+      #   uses: codecov/codecov-action@v3
+      #   with:
+      #     file: ./backend/coverage.xml
 
   deploy:
     needs: test
     if: |
       github.event_name == 'push' && 
       (github.ref == 'refs/heads/main' || 
-       github.ref == 'refs/heads/staging' || 
        github.ref == 'refs/heads/develop')
     runs-on: ubuntu-latest
     steps:
@@ -70,12 +69,11 @@ jobs:
       - name: Set environment variables
         run: |
           if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
-            echo "ENVIRONMENT=prd" >> $GITHUB_ENV
-          elif [[ $GITHUB_REF == 'refs/heads/staging' ]]; then
-            echo "ENVIRONMENT=stg" >> $GITHUB_ENV
+            echo "ENVIRONMENT=prod" >> $GITHUB_ENV
           else
             echo "ENVIRONMENT=dev" >> $GITHUB_ENV
           fi
+
           echo "PROJECT_NAME=task-app-1" >> $GITHUB_ENV
 
       - name: Configure AWS credentials

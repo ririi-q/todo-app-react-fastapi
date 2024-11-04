@@ -1,0 +1,7 @@
+terraform.tfstate
+terraform.tfstate.backup
+
+modules/bastion/ssh/bastion
+
+.terraform.lock.hcl
+.terraform
