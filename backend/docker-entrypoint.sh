@@ -9,6 +9,7 @@ SEED=${SEED:-false}
 # データベースのマイグレーション
 if [ "$MIGRATE" = "true" ]; then
     echo "Running database migrations..."
+    cd db
     alembic upgrade head
 fi
 
