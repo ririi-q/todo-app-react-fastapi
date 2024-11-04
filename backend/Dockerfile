@@ -21,6 +21,7 @@ RUN uv pip install --requirement pyproject.toml
 FROM python:3.12-slim
 
 WORKDIR /app
+ENV PYTHONPATH=/app
 
 # セキュリティアップデート
 RUN apt-get update && apt-get upgrade -y && \
@@ -51,4 +52,4 @@ USER appuser
 EXPOSE 8000
 
 ENTRYPOINT ["/bin/sh", "/app/docker-entrypoint.sh"]
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
