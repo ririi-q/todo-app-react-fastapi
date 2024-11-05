@@ -1,0 +1,48 @@
+name: todo-app-local
+
+services:
+  frontend:
+    build:
+      context: ../../frontend
+      dockerfile: Dockerfile.local
+    container_name: todo-app-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ../../frontend:/app
+      - /app/node_modules
+      - ../../frontend/.env.${ENVIRONMENT:-localhost}:/app/.env.${ENVIRONMENT:-localhost}
+    environment:
+      - ENVIRONMENT=${ENVIRONMENT:-localhost}
+
+  backend:
+    build:
+      context: ../../backend
+      dockerfile: Dockerfile.local
+    container_name: todo-app-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../../backend:/app
+      - ../../backend/db/init:/docker-entrypoint-initdb.d
+      - ../../backend/.env.${ENVIRONMENT:-local}:/app/.env.${ENVIRONMENT:-local}
+    environment:
+      - ENVIRONMENT=${ENVIRONMENT:-local}
+    depends_on:
+      - db
+
+  db:
+    image: postgres:17-alpine
+    container_name: todo-app-db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../../backend/db/init:/docker-entrypoint-initdb.d
+
+volumes:
+  postgres_data:

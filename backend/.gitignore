@@ -14,3 +14,10 @@ wheels/
 
 # uv
 uv.lock
+
+# env
+.env.local
+.env.dev
+
+# Editor directories and files
+.DS_Store
